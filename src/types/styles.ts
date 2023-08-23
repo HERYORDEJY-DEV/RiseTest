@@ -1,3 +1,6 @@
+import { spacing } from "~styles/constants";
+import { colors } from "~styles/colors";
+
 export type FontFamilyKeys = {
   sans: {
     light?: string;
@@ -19,4 +22,10 @@ export type FontFamilyKeys = {
     bold: string;
     boldItalic?: string;
   };
+};
+
+export type GlobalStylesType = {
+  fontFamily: FontFamilyKeys;
+  colors: { [p: keyof typeof colors]: any };
+  spacing: { [p: keyof typeof spacing]: any };
 };
