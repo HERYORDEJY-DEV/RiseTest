@@ -48,6 +48,31 @@ export type TabStackNavigationParamList = {
   Account: undefined;
 };
 
+export type AuthNavigationParamList = {
+  CreateAccount: undefined;
+};
+
 export type MainNavigationParamList = {
-  Tab: undefined;
+  Tab: { yu: string };
+  CreatePlan: undefined | { screenPresentation?: string };
+  GoalName: undefined;
+  TargetAmount: {
+    plan: {
+      name: string;
+    };
+  };
+  TargetDate: {
+    plan: {
+      name: string;
+      amount: string;
+    };
+  };
+  ReviewCreatePlan: {
+    plan: {
+      name: string;
+      amount: string;
+      date: Date | string;
+    };
+  };
+  CreatePlanSuccessful: { plan: any };
 };

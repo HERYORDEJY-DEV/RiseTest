@@ -2,7 +2,12 @@ import React from "react";
 import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
 import { GlobalStyles } from "~styles";
 
-type ButtonVariants = "heading" | "title" | "body";
+type ButtonVariants =
+  | "heading"
+  | "title"
+  | "title2"
+  | "body"
+  | "authScreenTitle";
 interface Props extends TextProps, TextStyle {
   variant?: ButtonVariants;
   /*
@@ -36,6 +41,16 @@ const headingStyles = StyleSheet.create({
   },
 });
 
+const authScreenTitleStyles = StyleSheet.create({
+  ...baseStyles,
+  content: {
+    ...baseStyles.content,
+    color: GlobalStyles.colors.text.heading,
+    fontFamily: GlobalStyles.fontFamily.grotesk.medium,
+    fontSize: 24,
+  },
+});
+
 const titleStyles = StyleSheet.create({
   ...baseStyles,
   content: {
@@ -43,14 +58,27 @@ const titleStyles = StyleSheet.create({
     color: GlobalStyles.colors.text.title,
     fontFamily: GlobalStyles.fontFamily.sans.bold,
     fontSize: 15,
-    // lineHeight: calcNormalLineHeight(15),
+    lineHeight: 22,
+  },
+});
+
+const title2Styles = StyleSheet.create({
+  ...baseStyles,
+  content: {
+    ...baseStyles.content,
+    color: GlobalStyles.colors.text.title,
+    fontFamily: GlobalStyles.fontFamily.sans.regular,
+    fontSize: 15,
+    lineHeight: 22,
   },
 });
 
 const allStyles: { [index: string]: any } = {
   heading: headingStyles,
   title: titleStyles,
+  title2: title2Styles,
   body: baseStyles,
+  authScreenTitle: authScreenTitleStyles,
 };
 const CustomText = React.memo(({ ...props }: Props) => {
   const styles = allStyles[props.variant ?? "body"];

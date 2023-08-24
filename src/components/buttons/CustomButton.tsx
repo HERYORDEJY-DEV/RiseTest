@@ -25,7 +25,7 @@ interface Props {
 
 const baseStyles = StyleSheet.create({
   container: {
-    height: 52,
+    height: 54,
     width: "100%",
     backgroundColor: GlobalStyles.colors.accent.teal001,
     alignItems: "center",
@@ -51,6 +51,10 @@ const primaryStyles = StyleSheet.create({
 
 const secondaryStyles = StyleSheet.create({
   ...baseStyles,
+  container: {
+    ...baseStyles.container,
+    backgroundColor: GlobalStyles.colors.offWhites003,
+  },
   title: {
     ...baseStyles.title,
     color: GlobalStyles.colors.accent.teal001,
@@ -68,7 +72,11 @@ function CustomButton({ ...props }: Props) {
     isLoading = props.loading;
   return (
     <TouchableOpacity
-      style={{ ...styles.container, ...props.containerStyle }}
+      style={{
+        ...styles.container,
+        ...props.containerStyle,
+        opacity: isDisabled ? 0.5 : 1,
+      }}
       onPress={props.onPress}
       disabled={isDisabled || isLoading}
     >

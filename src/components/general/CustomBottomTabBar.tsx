@@ -202,6 +202,8 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "rgba(255, 255, 255, 0.90)",
     justifyContent: "space-between",
+    borderTopWidth: 1,
+    borderColor: "#E4E7EB",
   },
   iconsWrapper: {
     width: 32,

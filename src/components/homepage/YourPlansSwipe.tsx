@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import CustomText from "~components/general/CustomText";
 import { svgAssets } from "~assets";
 import {
@@ -9,20 +9,24 @@ import {
 import { GlobalStyles } from "~styles";
 import CustomSvgXml from "~components/general/CustomSvgXml";
 import { calcNormalLineHeight } from "~styles/constants";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { MainNavigationParamList } from "~types/navigation";
+import { useNavigation } from "@react-navigation/native";
 
 interface Props {
   //
 }
 
 const slideWidth = 188,
-  slideHeight = 243;
-
-const slides = [...Array(3).keys()];
-
-const { CreatePlanPlusIcon, ViewPlansIcon, ViewPlansActiveIcon } = svgAssets;
+  slideHeight = 243,
+  slides = [...Array(3).keys()],
+  { CreatePlanPlusIcon, ViewPlansIcon, ViewPlansActiveIcon } = svgAssets;
 
 const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
   const scrollOffset = useSharedValue(0);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<MainNavigationParamList, "Tab">>();
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       scrollOffset.value = event.contentOffset.x;
@@ -39,7 +43,7 @@ const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
 
         <View style={styles.viewAllWrapper}>
           <CustomText style={styles.viewAll}>View all plans</CustomText>
-          <CustomSvgXml svg={ViewPlansIcon} stroke={"#e51313"} />
+          <CustomSvgXml svg={ViewPlansIcon} />
         </View>
       </View>
       {/* description */}
@@ -56,12 +60,15 @@ const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
         snapToInterval={slideWidth + 20}
         decelerationRate="fast"
       >
-        <View style={styles.slideItemCreate}>
+        <Pressable
+          onPress={() => navigation.navigate("CreatePlan")}
+          style={styles.slideItemCreate}
+        >
           <CustomSvgXml svg={CreatePlanPlusIcon} />
           <CustomText style={styles.createTitle}>
             Create an{"\n"}investment plan
           </CustomText>
-        </View>
+        </Pressable>
         {slides.map((i, index) => (
           <View style={styles.slideItemPlan} key={`${index}`}></View>
         ))}

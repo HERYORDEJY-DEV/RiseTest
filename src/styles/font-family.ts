@@ -8,7 +8,7 @@ import { FontFamilyKeys } from "~types/styles";
 
 const iosFontFamily: FontFamilyKeys = {
   sans: {
-    regular: "DMSans",
+    regular: "DMSans-Regular",
     medium: "DMSans-Medium",
     mediumItalic: "DMSans-MediumItalic",
     bold: "DMSans-Bold",
@@ -16,7 +16,7 @@ const iosFontFamily: FontFamilyKeys = {
   grotesk: {
     light: "SpaceGrotesk-Light",
     regular: "SpaceGrotesk-Regular",
-    medium: "SpaceGrotesk-Regular",
+    medium: "SpaceGrotesk-Medium",
     semiBold: "SpaceGrotesk-SemiBold",
     bold: "SpaceGrotesk-Bold",
   },

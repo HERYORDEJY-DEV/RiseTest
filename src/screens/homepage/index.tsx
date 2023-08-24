@@ -29,7 +29,6 @@ const { HomepageGradBg } = imageAssets;
 export default function Homepage(props: Props): JSX.Element {
   const greetingOfDay = getGreetingOfDay();
   const safeAreaInset = useSafeAreaInsets();
-  console.log("\n\n safeAreaInset :>> \t\t", safeAreaInset, "\n\n---");
 
   return (
     <CustomScreenContainer containerStyle={{ paddingTop: 0 }}>

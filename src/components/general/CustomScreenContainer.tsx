@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props extends StatusBarProps {
   children: React.JSX.Element;
-  containerStyle: ViewStyle;
+  containerStyle?: ViewStyle;
 }
 
 export default function CustomScreenContainer(props: Props): React.JSX.Element {
