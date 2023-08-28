@@ -9,7 +9,7 @@ import { imageAssets, svgAssets } from "~assets";
 import CustomText from "~components/general/CustomText";
 import CustomSvgXml from "~components/general/CustomSvgXml";
 import { SvgProps } from "react-native-svg";
-import CustomButton from "~components/buttons/CustomButton";
+import CustomButton from "~components/general/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props {

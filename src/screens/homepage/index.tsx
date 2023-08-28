@@ -1,4 +1,6 @@
-import React from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useCallback } from "react";
 import {
   Image,
   Pressable,
@@ -7,17 +9,22 @@ import {
   Text,
   View,
 } from "react-native";
-import CustomScreenContainer from "~components/general/CustomScreenContainer";
-import { getGreetingOfDay } from "~utils/get-greeting";
-import { imageAssets, svgAssets } from "~assets";
-import { SvgXml } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { GlobalStyles } from "~styles";
-import BalanceCardSwipe from "~components/homepage/BalanceCardSwipe";
-import CustomButton from "~components/buttons/CustomButton";
-import YourPlansSwipe from "~components/homepage/YourPlansSwipe";
+import { SvgXml } from "react-native-svg";
+import { imageAssets, svgAssets } from "~assets";
+import CustomButton from "~components/general/CustomButton";
+import CustomScreenContainer from "~components/general/CustomScreenContainer";
 import CustomSvgXml from "~components/general/CustomSvgXml";
+import BalanceCardSwipe from "~components/homepage/BalanceCardSwipe";
 import TodaysQuote from "~components/homepage/TodaysQuote";
+import YourPlansSwipe from "~components/homepage/YourPlansSwipe";
+import { useAppDispatch, useAppSelector } from "~hooks/useStore";
+import authenticationApiRequests from "~services/authenticationRequests";
+import { createAccount } from "~store/slices/authSlice";
+import { updateWalletOnSignIn } from "~store/slices/walletSlice";
+import { GlobalStyles } from "~styles";
+import { MainNavigationParamList } from "~types/navigation";
+import { getGreetingOfDay } from "~utils/get-greeting";
 
 interface Props {
   //
@@ -29,6 +36,50 @@ const { HomepageGradBg } = imageAssets;
 export default function Homepage(props: Props): JSX.Element {
   const greetingOfDay = getGreetingOfDay();
   const safeAreaInset = useSafeAreaInsets();
+  const dispatch = useAppDispatch(),
+    authState = useAppSelector(state => state.authentication);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<MainNavigationParamList, "Tab">>();
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const onGetSession = async () => {
+        try {
+          const res = await authenticationApiRequests.getSession();
+
+          if (Boolean(res.data.id)) {
+            const resData = {
+              email: res.data.email_address,
+              firstName: res.data.first_name,
+              lastName: res.data.last_name,
+              username: res.data.username,
+              id: res.data.id,
+            };
+            dispatch(createAccount(resData));
+            dispatch(
+              updateWalletOnSignIn({
+                totalBalance: res.data.total_balance,
+                totalReturns: res.data.total_returns,
+                iat: res.data.iat,
+                exp: res.data.exp,
+              }),
+            );
+          }
+        } catch (err) {
+          // return Alert.alert(err?.message?? 'Unable to mak')
+          // console.error("\n\n err :00>> \t\t", err, "\n\n---");
+        }
+      };
+
+      onGetSession();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   return (
     <CustomScreenContainer containerStyle={{ paddingTop: 0 }}>
@@ -41,7 +92,7 @@ export default function Homepage(props: Props): JSX.Element {
         <View style={[styles.navBar, { marginTop: safeAreaInset.top + 14.5 }]}>
           <View style={styles.navBarLeft}>
             <Text style={styles.greeting}>{greetingOfDay}</Text>
-            <Text style={styles.name}>Yusuf</Text>
+            <Text style={styles.name}>{authState.first_name}</Text>
           </View>
           <View style={styles.navBarRight}>
             <Pressable style={styles.bonusButton}>
@@ -60,7 +111,7 @@ export default function Homepage(props: Props): JSX.Element {
           <CustomButton
             variant={"secondary"}
             title={"Add balance"}
-            onPress={() => {}}
+            onPress={() => navigation.navigate("FundWallet")}
             containerStyle={styles.addBalanceButton}
             leftElement={<SvgXml xml={`${PlusIcon}`} />}
           />

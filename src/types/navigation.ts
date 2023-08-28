@@ -1,4 +1,6 @@
 import { StyleProp, ViewStyle } from "react-native";
+import { NavigatorScreenParams } from "@react-navigation/native";
+import { PlanType } from "~types/plans";
 
 export const enum TabScreen {
   Home = "Home",
@@ -49,11 +51,19 @@ export type TabStackNavigationParamList = {
 };
 
 export type AuthNavigationParamList = {
-  CreateAccount: undefined;
+  CreateAccount: { showNavBarBackButton?: boolean };
+  AboutYou: { form?: { email: string; password: string } };
+  AccountCreated: undefined;
+  SignIn: undefined;
+  ForgotPassword: undefined;
+  CreatPin: undefined;
+  PinCreated: undefined;
+  Onboarding: undefined;
+  SplashScreen: undefined;
 };
 
 export type MainNavigationParamList = {
-  Tab: { yu: string };
+  Tab: NavigatorScreenParams<TabStackNavigationParamList>;
   CreatePlan: undefined | { screenPresentation?: string };
   GoalName: undefined;
   TargetAmount: {
@@ -75,4 +85,9 @@ export type MainNavigationParamList = {
     };
   };
   CreatePlanSuccessful: { plan: any };
+  AllPlans: undefined;
+  FundWallet: undefined;
+  ChoosePlanToFund: undefined;
+  PlanDetails: { plan: PlanType };
+  SelectBank: { plan: PlanType };
 };

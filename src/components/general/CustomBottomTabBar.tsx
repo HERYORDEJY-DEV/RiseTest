@@ -1,5 +1,12 @@
 import React from "react";
-import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { svgAssets } from "~assets";
 import CustomText from "~components/general/CustomText";
 import type { BottomTabBarProps as ReactNavigationBottomTabBarProps } from "@react-navigation/bottom-tabs";
@@ -127,41 +134,44 @@ const CustomBottomTabBar = ({
     transform: [{ translateX: withTiming(tabWidth * selectedTab) }],
   }));
   const { bottom } = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
 
   return (
-    <SafeAreaView edges={["bottom"]}>
-      <View
-        style={[
-          styles.tabsContainer,
-          { height: 90 - bottom, alignItems: "center" },
-        ]}
-      >
-        {routeNames.map((routeName, index) => (
-          <TabBarItem
-            routeNames={routeNames}
+    <View style={{ height: 90 }}>
+      <SafeAreaView edges={["bottom"]}>
+        <View
+          style={[
+            styles.tabsContainer,
+            { height: 90 - bottom, alignItems: "center" },
+          ]}
+        >
+          {routeNames.map((routeName, index) => (
+            <TabBarItem
+              routeNames={routeNames}
+              animatedStyle={animatedStyle}
+              key={routeName}
+              title={toBottomBarRouteName(routeName as TabScreenValue)}
+              isSelected={selectedTab === index}
+              onPress={() => navigation.navigate(routeName)}
+            />
+          ))}
+        </View>
+        <View
+          style={{
+            position: "absolute",
+            alignItems: "center",
+            justifyContent: "center",
+            width: tabWidth,
+            bottom: bottom === 0 ? 20 : 40,
+          }}
+        >
+          <TabBarIndicator
+            tabCount={routeNames.length}
             animatedStyle={animatedStyle}
-            key={routeName}
-            title={toBottomBarRouteName(routeName as TabScreenValue)}
-            isSelected={selectedTab === index}
-            onPress={() => navigation.navigate(routeName)}
           />
-        ))}
-      </View>
-      <View
-        style={{
-          position: "absolute",
-          alignItems: "center",
-          justifyContent: "center",
-          width: tabWidth,
-          top: 40,
-        }}
-      >
-        <TabBarIndicator
-          tabCount={routeNames.length}
-          animatedStyle={animatedStyle}
-        />
-      </View>
-    </SafeAreaView>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
@@ -172,7 +182,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "flex-start",
-    // backgroundColor: '#FFFFFF', //Colors.layoutContainer,
   },
   bottomTabButton: {
     flex: 1,

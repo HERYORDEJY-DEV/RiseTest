@@ -44,6 +44,7 @@ export default function CreatePlanDateInput(props: Props): JSX.Element {
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
           date={new Date(props.value ?? "")}
+          minimumDate={new Date()}
         />
 
         <TextInput

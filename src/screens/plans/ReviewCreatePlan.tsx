@@ -1,5 +1,5 @@
-import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import React, { useRef, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import CustomText from "~components/general/CustomText";
 import CustomScreenContainer from "~components/general/CustomScreenContainer";
 import CreatePlansNavBar from "~components/plans/CreatePlansNavBar";
@@ -11,13 +11,20 @@ import { format } from "date-fns";
 import { GlobalStyles } from "~styles";
 import { svgAssets } from "~assets";
 import CustomSvgXml from "~components/general/CustomSvgXml";
-import CustomButton from "~components/buttons/CustomButton";
-import { BarChart } from "react-native-gifted-charts";
+import CustomButton from "~components/general/CustomButton";
+import { useDispatch } from "react-redux";
+import plansRequests from "~services/plansRequests";
+import { formatAmount } from "~utils/get-greeting";
+import { createPlan } from "~store/slices/plansSlice";
+import ReanimatedGraph, {
+  ReanimatedGraphPublicMethods,
+} from "@birdwingo/react-native-reanimated-graph";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const data = {
   // Your data points here
-  xAxis: [0, 1, 2, 3, 4],
-  yAxis: [0, 5, 2, 7, 4],
+  xAxis: [2034, 2035, 2036, 2037, 2038],
+  yAxis: [0, 25000, 50000, 75000],
 };
 
 interface Props {
@@ -35,22 +42,35 @@ export default function ReviewCreatePlan(props: Props): JSX.Element {
     route = useRoute<RouteProp<MainNavigationParamList, "ReviewCreatePlan">>(),
     plan = route.params.plan;
 
-  // const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  const graphRef = useRef<ReanimatedGraphPublicMethods>(null);
 
-  const lineData = [
-    { value: 0, label: "001", labelComponent: () => <></> },
-    { value: 20, label: "002", labelComponent: () => <></> },
-    { value: 18, label: "003", labelComponent: () => <></> },
-    { value: 40, label: "004", labelComponent: () => <></> },
-    { value: 36, label: "005", labelComponent: () => <></> },
-    { value: 60, label: "006", labelComponent: () => <></> },
-    { value: 54, label: "007", labelComponent: () => <></> },
-    { value: 85, label: "008", labelComponent: () => <></> },
-  ];
   const updateGraphData = () => {
     // Call this function to update the data displayed on the graph
     if (graphRef.current) {
       graphRef.current.updateData(data);
+    }
+  };
+  const onContinue = async () => {
+    setIsLoading(true);
+    try {
+      const data = {
+        plan_name: plan.name,
+        target_amount: +plan.amount,
+        maturity_date: format(new Date(plan.date), "yyyy-MMMM-dd"),
+      };
+
+      const res = await plansRequests.createPlan(data);
+      if (Boolean(res.data.id)) {
+        dispatch(createPlan(res.data));
+        navigation.navigate("CreatePlanSuccessful", { plan: res.data });
+      }
+      setIsLoading(false);
+    } catch (err: any) {
+      // console.log("\n\n err :>> \t\t", err, err?.message, "\n\n---");
+      setIsLoading(false);
+      return Alert.alert("Error creating plan.\nTry again later");
     }
   };
 
@@ -59,14 +79,14 @@ export default function ReviewCreatePlan(props: Props): JSX.Element {
       <>
         <CreatePlansNavBar title={"Review"} />
 
-        <ScrollView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
           {/* calculations */}
           <View style={styles.calcWrapper}>
             <CustomText style={styles.planName}>{plan.name}</CustomText>
             <CustomText variant={"heading"} style={styles.roi}>
-              $10,930.75
+              ${formatAmount(plan.amount, false)}
             </CustomText>
-            <CustomText variant={"title"} style={styles.planDate}>
+            <CustomText variant={"title"} style={styles.planTargetAmount}>
               by {format(new Date(plan.date), "dd MMMM yyyy")}
             </CustomText>
 
@@ -90,8 +110,35 @@ export default function ReviewCreatePlan(props: Props): JSX.Element {
               </View>
             </View>
           </View>
-
           {/* graph*/}
+          <GestureHandlerRootView>
+            <View style={styles.graphWrapper}>
+              <ReanimatedGraph
+                ref={graphRef}
+                xAxis={data.xAxis}
+                yAxis={data.yAxis}
+                color={"#0898A0"}
+                selectionLineColor={"#22D8E2"}
+                showXAxisLegend={true}
+                showYAxisLegend={true}
+                containerStyle={styles.graphContainerStyle}
+                showExtremeValues={false}
+                selectionAreaData={[2, 3]}
+                showBlinkingDot={true}
+                showSelectionDot={true}
+                renderYAxisLegend={(value: number, index: number) => (
+                  <CustomText style={styles.graphTextStyle}>
+                    ${value}
+                  </CustomText>
+                )}
+                renderXAxisLegend={(value: number, index: number) => (
+                  <CustomText style={styles.graphTextStyle}>
+                    ${value}
+                  </CustomText>
+                )}
+              />
+            </View>
+          </GestureHandlerRootView>
           {/*
           <GestureHandlerRootView>
             <ReanimatedGraph
@@ -102,38 +149,6 @@ export default function ReviewCreatePlan(props: Props): JSX.Element {
             />
           </GestureHandlerRootView>
 */}
-
-          <View>
-            <View
-              style={{
-                marginVertical: 100,
-                paddingVertical: 50,
-                backgroundColor: "#414141",
-              }}
-            >
-              <BarChart
-                areaChart
-                hideDataPoints
-                isAnimated
-                animationDuration={1200}
-                startFillColor="#0BA5A4"
-                startOpacity={1}
-                endOpacity={0.3}
-                initialSpacing={0}
-                data={lineData}
-                spacing={30}
-                thickness={5}
-                hideRules
-                hideYAxisText
-                yAxisColor="#0BA5A4"
-                showVerticalLines
-                verticalLinesColor="rgba(14,164,164,0.5)"
-                xAxisColor="#0BA5A4"
-                color="#0BA5A4"
-              />
-            </View>
-          </View>
-
           <View style={styles.wrap}>
             {/* estimated */}
             <View style={styles.estimatedWrapper}>
@@ -162,15 +177,15 @@ export default function ReviewCreatePlan(props: Props): JSX.Element {
           {/* buttons*/}
           <View style={styles.buttonWrapper}>
             <CustomButton
-              onPress={() =>
-                navigation.navigate("CreatePlanSuccessful", { plan })
-              }
+              onPress={onContinue}
               title={"Agree & Continue"}
+              loading={isLoading}
             />
             <CustomButton
               variant={"secondary"}
               onPress={() => navigation.navigate("GoalName")}
               title={"Start over"}
+              disabled={isLoading}
             />
           </View>
         </ScrollView>
@@ -182,6 +197,7 @@ export default function ReviewCreatePlan(props: Props): JSX.Element {
 const styles = StyleSheet.create({
   container: {
     //
+    paddingBottom: 30,
   },
   calcWrapper: {
     paddingHorizontal: 45,
@@ -202,7 +218,7 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     marginVertical: 4,
   },
-  planDate: {
+  planTargetAmount: {
     fontFamily: GlobalStyles.fontFamily.sans.regular,
   },
   investmentOutlineWrapper: {
@@ -254,107 +270,15 @@ const styles = StyleSheet.create({
   },
   estimated: {},
   estimatedValue: {},
+  graphWrapper: {},
+  graphTextStyle: {
+    fontFamily: GlobalStyles.fontFamily.grotesk.regular,
+    lineHeight: 13,
+    color: "#94A1AD",
+    fontSize: 11,
+  },
+  graphContainerStyle: {
+    paddingHorizontal: 17,
+    marginVertical: 27,
+  },
 });
-
-const dPoint = () => {
-  return (
-    <View
-      style={{
-        width: 14,
-        height: 14,
-        backgroundColor: "white",
-        borderWidth: 3,
-        borderRadius: 7,
-        borderColor: "#07BAD1",
-      }}
-    />
-  );
-};
-
-const lcomp = (text: string) => {
-  return <CustomText>{text}</CustomText>;
-};
-
-const latestData = [
-  {
-    value: 100,
-    labelComponent: () => lcomp("22 Nov"),
-    customDataPoint: dPoint,
-  },
-  {
-    value: 120,
-    hideDataPoint: true,
-  },
-  {
-    value: 210,
-    customDataPoint: dPoint,
-  },
-  {
-    value: 250,
-    hideDataPoint: true,
-  },
-  {
-    value: 320,
-    labelComponent: () => lcomp("24 Nov"),
-    customDataPoint: dPoint,
-  },
-  {
-    value: 310,
-    hideDataPoint: true,
-  },
-  {
-    value: 270,
-    customDataPoint: dPoint,
-  },
-  {
-    value: 240,
-    hideDataPoint: true,
-  },
-  {
-    value: 130,
-    labelComponent: () => lcomp("26 Nov"),
-    customDataPoint: dPoint,
-  },
-  {
-    value: 120,
-    hideDataPoint: true,
-  },
-  {
-    value: 100,
-    customDataPoint: dPoint,
-  },
-  {
-    value: 210,
-    hideDataPoint: true,
-  },
-  {
-    value: 270,
-    labelComponent: () => lcomp("28 Nov"),
-    customDataPoint: dPoint,
-  },
-  {
-    value: 240,
-    hideDataPoint: true,
-  },
-  {
-    value: 120,
-    hideDataPoint: true,
-  },
-  {
-    value: 100,
-    customDataPoint: dPoint,
-  },
-  {
-    value: 210,
-    labelComponent: () => lcomp("28 Nov"),
-    customDataPoint: dPoint,
-  },
-  {
-    value: 20,
-    hideDataPoint: true,
-  },
-  {
-    value: 100,
-    customDataPoint: dPoint,
-  },
-];

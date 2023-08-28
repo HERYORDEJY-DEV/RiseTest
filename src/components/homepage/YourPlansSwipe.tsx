@@ -1,17 +1,28 @@
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import CustomText from "~components/general/CustomText";
-import { svgAssets } from "~assets";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useEffect } from "react";
+import {
+  ImageBackground,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   useAnimatedScrollHandler,
   useSharedValue,
 } from "react-native-reanimated";
-import { GlobalStyles } from "~styles";
+import { imageAssets, svgAssets } from "~assets";
 import CustomSvgXml from "~components/general/CustomSvgXml";
+import CustomText from "~components/general/CustomText";
+import { useQueryPlans } from "~hooks/useQueryPlans";
+import { useAppDispatch, useAppSelector } from "~hooks/useStore";
+import { fetchPlans } from "~store/slices/plansSlice";
+import { GlobalStyles } from "~styles";
 import { calcNormalLineHeight } from "~styles/constants";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { MainNavigationParamList } from "~types/navigation";
-import { useNavigation } from "@react-navigation/native";
+import { PlanType } from "~types/plans";
 
 interface Props {
   //
@@ -20,12 +31,22 @@ interface Props {
 const slideWidth = 188,
   slideHeight = 243,
   slides = [...Array(3).keys()],
-  { CreatePlanPlusIcon, ViewPlansIcon, ViewPlansActiveIcon } = svgAssets;
+  {
+    CreatePlanPlusIcon,
+    ViewPlansIcon,
+    ViewPlansActiveIcon,
+    plans: { PlanItemArrowRight },
+  } = svgAssets,
+  { PlanItemImage } = imageAssets;
 
 const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
+  const plansQuery = useQueryPlans();
   const scrollOffset = useSharedValue(0);
   const navigation =
     useNavigation<NativeStackNavigationProp<MainNavigationParamList, "Tab">>();
+
+  const dispatch = useAppDispatch(),
+    plansState = useAppSelector(state => state.plans);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
@@ -33,23 +54,40 @@ const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
     },
   });
 
+  const myPlans = plansState.plans.items;
+
+  useEffect(() => {
+    dispatch(fetchPlans(plansQuery.data));
+  }, []);
+
   return (
     <View style={{}}>
       {/*  header */}
       <View style={styles.header}>
-        <CustomText variant={"heading"} style={styles.headerTitle}>
-          Create Plan
-        </CustomText>
+        {plansState.plans.item_count === 0 ? (
+          <CustomText variant={"heading"} style={styles.headerTitle}>
+            Create Plan
+          </CustomText>
+        ) : (
+          <CustomText variant={"heading"} style={styles.headerTitle}>
+            Your plans
+          </CustomText>
+        )}
 
-        <View style={styles.viewAllWrapper}>
+        <Pressable
+          onPress={() => navigation.navigate("AllPlans")}
+          style={styles.viewAllWrapper}
+        >
           <CustomText style={styles.viewAll}>View all plans</CustomText>
           <CustomSvgXml svg={ViewPlansIcon} />
-        </View>
+        </Pressable>
       </View>
       {/* description */}
-      <CustomText style={styles.desc}>
-        Start your investment journey by creating a{"\n"}plan
-      </CustomText>
+      {plansState.plans.item_count === 0 && (
+        <CustomText style={styles.desc}>
+          Start your investment journey by creating a{"\n"}plan
+        </CustomText>
+      )}
 
       {/* slide */}
       <ScrollView
@@ -69,9 +107,38 @@ const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
             Create an{"\n"}investment plan
           </CustomText>
         </Pressable>
-        {slides.map((i, index) => (
-          <View style={styles.slideItemPlan} key={`${index}`}></View>
-        ))}
+        {myPlans.map(
+          (plan: PlanType, index: number) =>
+            index < 5 && (
+              <TouchableOpacity
+                style={styles.slideItemPlan}
+                key={`${index}`}
+                onPress={() => navigation.navigate("PlanDetails", { plan })}
+              >
+                <ImageBackground
+                  source={PlanItemImage}
+                  style={styles.planItemImage}
+                >
+                  <View style={styles.slideItemWrapper}>
+                    <View style={styles.descWrapper}>
+                      <View style={styles.descWrapperRight}>
+                        <CustomText style={styles.planName}>
+                          {plan.plan_name}
+                        </CustomText>
+                        <CustomText style={styles.amount}>
+                          ${plan.invested_amount}
+                        </CustomText>
+                        <CustomText style={styles.assetType}>
+                          Mixed assets
+                        </CustomText>
+                      </View>
+                      <CustomSvgXml svg={PlanItemArrowRight} />
+                    </View>
+                  </View>
+                </ImageBackground>
+              </TouchableOpacity>
+            ),
+        )}
       </ScrollView>
     </View>
   );
@@ -119,6 +186,7 @@ const styles = StyleSheet.create({
     height: 243,
     backgroundColor: GlobalStyles.colors.offWhites003,
     borderRadius: 12,
+    overflow: "hidden",
   },
   slide: {
     columnGap: 20,
@@ -127,5 +195,43 @@ const styles = StyleSheet.create({
   desc: {
     paddingHorizontal: 20,
     marginBottom: 20,
+  },
+  planItemImage: {
+    width: "100%",
+    height: "100%",
+  },
+  slideItemWrapper: {
+    paddingHorizontal: 13,
+    paddingVertical: 16,
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end",
+  },
+  descWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+  },
+  descWrapperRight: {
+    // rowGap: 10,
+  },
+  planName: {
+    color: "#171C22",
+    fontSize: 15,
+    lineHeight: 22,
+    textTransform: "capitalize",
+  },
+  assetType: {
+    color: "#171C22",
+    fontSize: 15,
+    lineHeight: 22,
+    textTransform: "capitalize",
+  },
+  amount: {
+    color: "#171C22",
+    fontSize: 18,
+    letterSpacing: -0.36,
+    textTransform: "capitalize",
+    fontFamily: GlobalStyles.fontFamily.grotesk.regular,
   },
 });

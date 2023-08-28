@@ -11,6 +11,7 @@ export const colors: { [index: string]: any } = {
     inactive: "#94A1AD",
   },
   white: "#FFFFFF",
+  black: "#000000",
   screen: {
     background: "#FFFFFF",
   },

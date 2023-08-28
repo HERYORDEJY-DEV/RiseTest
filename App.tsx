@@ -5,18 +5,22 @@
  * @format
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, ScrollView, Text, TextInput } from "react-native";
 import setDefaultProps from "react-native-simple-default-props";
 import { GlobalStyles } from "~styles";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import RootNavigation from "~navigation";
+import { Provider } from "react-redux";
+import { store } from "~store";
+import { WithSplashScreen } from "~navigation/SplashScreen";
+import { QueryClient, QueryClientProvider } from "react-query";
 
-/*type SectionProps = PropsWithChildren<{
-  title: string;
-}>;*/
+const queryClient = new QueryClient();
 
 function App(): JSX.Element {
+  const [isAppReady, setIsAppReady] = useState(false);
+
   // default props for Text component
   setDefaultProps(Text, {
     style: {
@@ -62,10 +66,26 @@ function App(): JSX.Element {
     allowFontScaling: false,
   });
 
+  async function initialize() {
+    //
+  }
+
+  useEffect(() => {
+    initialize().then(context => {
+      setIsAppReady(true);
+    });
+  }, []);
+
   return (
-    <SafeAreaProvider>
-      <RootNavigation />
-    </SafeAreaProvider>
+    <WithSplashScreen isAppReady={isAppReady}>
+      <Provider store={store}>
+        <SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <RootNavigation />
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </Provider>
+    </WithSplashScreen>
   );
 }
 

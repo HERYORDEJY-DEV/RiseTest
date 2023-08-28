@@ -2,6 +2,13 @@ module.exports = {
   presets: ["module:metro-react-native-babel-preset"],
   plugins: [
     [
+      "module:react-native-dotenv",
+      {
+        moduleName: "@env",
+        path: ".env",
+      },
+    ],
+    [
       "babel-plugin-inline-import",
       {
         extensions: [".svg"],
@@ -14,7 +21,7 @@ module.exports = {
         extensions: [
           ".ios.ts",
           ".android.ts",
-          ".ts",
+          "plans.ts",
           ".ios.tsx",
           ".android.tsx",
           ".tsx",

@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, TextInput, TextInputProps, View } from "react-native";
 import { GlobalStyles } from "~styles";
 import CustomText from "~components/general/CustomText";
+import { formatAmount } from "~utils/get-greeting";
 
 interface Props extends TextInputProps {
   //
 }
 
 export default function CreatePlanAmountInput(props: Props): JSX.Element {
+  const [amount, setAmount] = useState("");
+
+  const onChangeText = (text: string) => {
+    const _amount = text.split(",").join("");
+    setAmount(_amount);
+    props.onChangeText?.(_amount);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.left}>
@@ -17,6 +26,8 @@ export default function CreatePlanAmountInput(props: Props): JSX.Element {
         style={styles.textInput}
         keyboardType={"number-pad"}
         {...props}
+        onChangeText={onChangeText}
+        value={formatAmount(amount, false)}
       />
     </View>
   );

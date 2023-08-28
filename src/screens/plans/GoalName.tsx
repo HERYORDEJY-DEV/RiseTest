@@ -8,7 +8,7 @@ import { MainNavigationParamList } from "~types/navigation";
 import { imageAssets, svgAssets } from "~assets";
 import CustomText from "~components/general/CustomText";
 import { SvgProps } from "react-native-svg";
-import CustomButton from "~components/buttons/CustomButton";
+import CustomButton from "~components/general/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CreatePlanQuestionProgress from "~components/plans/CreatePlanQuestionProgress";
 import { GlobalStyles } from "~styles";

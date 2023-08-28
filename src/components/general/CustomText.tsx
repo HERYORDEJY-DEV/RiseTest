@@ -10,16 +10,6 @@ type ButtonVariants =
   | "authScreenTitle";
 interface Props extends TextProps, TextStyle {
   variant?: ButtonVariants;
-  /*
-  onPress: () => void;
-  title?: string;
-  children?: React.JSX.Element;
-  containerStyle?: ViewStyle;
-  disabled?: boolean;
-  loading?: boolean;
-  rightElement?: React.ReactNode;
-  leftElement?: React.ReactNode;
-*/
 }
 
 const baseStyles = StyleSheet.create({
@@ -46,7 +36,7 @@ const authScreenTitleStyles = StyleSheet.create({
   content: {
     ...baseStyles.content,
     color: GlobalStyles.colors.text.heading,
-    fontFamily: GlobalStyles.fontFamily.grotesk.medium,
+    fontFamily: GlobalStyles.fontFamily.grotesk.bold,
     fontSize: 24,
   },
 });

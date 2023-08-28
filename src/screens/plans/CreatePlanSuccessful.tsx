@@ -4,20 +4,29 @@ import CustomScreenContainer from "~components/general/CustomScreenContainer";
 import CustomText from "~components/general/CustomText";
 import { svgAssets } from "~assets";
 import { GlobalStyles } from "~styles";
-import CustomButton from "~components/buttons/CustomButton";
+import CustomButton from "~components/general/CustomButton";
+import CustomSvgXml from "~components/general/CustomSvgXml";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { MainNavigationParamList } from "~types/navigation";
 
 interface Props {
   //
 }
 
-const {} = svgAssets;
+const { SuccessCheckIcon } = svgAssets;
 export default function CreatePlanSuccessful(props: Props): JSX.Element {
+  const navigation =
+    useNavigation<
+      NativeStackNavigationProp<MainNavigationParamList, "CreatePlanSuccessful">
+    >();
+
   return (
     <CustomScreenContainer>
       <View style={styles.container}>
         <View style={styles.top}>
           <View style={styles.checkWrapper}>
-            {/*<CustomSvgXml svg={ } />*/}
+            <CustomSvgXml svg={SuccessCheckIcon} />
           </View>
           <CustomText style={styles.message}>
             You just created{"\n"}your plan.
@@ -26,7 +35,10 @@ export default function CreatePlanSuccessful(props: Props): JSX.Element {
         </View>
 
         <View style={styles.bottom}>
-          <CustomButton onPress={() => {}} title={"View Plan"} />
+          <CustomButton
+            onPress={() => navigation.navigate("Tab", { screen: "Home" })}
+            title={"View Plan"}
+          />
         </View>
       </View>
     </CustomScreenContainer>

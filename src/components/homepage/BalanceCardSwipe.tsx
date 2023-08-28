@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
 import { LinearGradient } from "react-native-linear-gradient";
 import CustomText from "~components/general/CustomText";
@@ -14,6 +14,11 @@ import Animated, {
 } from "react-native-reanimated";
 import { GlobalStyles } from "~styles";
 import CustomSvgXml from "~components/general/CustomSvgXml";
+import { useAppDispatch, useAppSelector } from "~hooks/useStore";
+import { useFocusEffect } from "@react-navigation/native";
+import authenticationApiRequests from "~services/authenticationRequests";
+import { updateUserOnSession } from "~store/slices/authSlice";
+import { updateWalletOnSession } from "~store/slices/walletSlice";
 
 interface Props {
   //
@@ -33,6 +38,47 @@ const BalanceCardSwipe = React.memo((props: Props): JSX.Element => {
       scrollOffset.value = event.contentOffset.x;
     },
   });
+
+  const dispatch = useAppDispatch(),
+    walletState = useAppSelector(state => state.wallet);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const onGetSessions = async () => {
+        try {
+          const res = await authenticationApiRequests.getSession();
+          if (Boolean(res.data.id)) {
+            const resData = {
+              email_address: res.data.email_address,
+              first_name: res.data.first_name,
+              last_name: res.data.last_name,
+              username: res.data.username,
+              id: res.data.id,
+              iat: res.data.iat,
+              exp: res.data.exp,
+            };
+            dispatch(updateUserOnSession(resData));
+            dispatch(
+              updateWalletOnSession({
+                total_balance: res.data.total_balance,
+                total_returns: res.data.total_returns,
+              }),
+            );
+          }
+        } catch (err) {
+          //
+        }
+      };
+
+      onGetSessions();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   return (
     <LinearGradient
@@ -61,7 +107,9 @@ const BalanceCardSwipe = React.memo((props: Props): JSX.Element => {
               </View>
               {/*amount*/}
               <View style={styles.titleWrapper}>
-                <CustomText style={styles.amount}>$0.000</CustomText>
+                <CustomText style={styles.amount}>
+                  ${walletState.total_balance}
+                </CustomText>
               </View>
               {/*desc*/}
               <View style={[styles.titleWrapper, { columnGap: 4 }]}>

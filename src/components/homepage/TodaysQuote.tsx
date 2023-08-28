@@ -1,10 +1,13 @@
-import React from "react";
-import { ImageBackground, Pressable, StyleSheet, View } from "react-native";
-import CustomText from "~components/general/CustomText";
-import { GlobalStyles } from "~styles";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import { imageAssets, svgAssets } from "~assets";
 import CustomSvgXml from "~components/general/CustomSvgXml";
-import { LinearGradient } from "react-native-linear-gradient";
+import CustomText from "~components/general/CustomText";
+import { useAppDispatch, useAppSelector } from "~hooks/useStore";
+import generalApiRequests from "~services/generalRequests";
+import { updateQuote } from "~store/slices/generalSlice";
+import { GlobalStyles } from "~styles";
 
 interface Props {
   //
@@ -14,28 +17,44 @@ const { QuoteShareIcon } = svgAssets;
 const { TealBg } = imageAssets;
 
 export default function TodaysQuote(props: Props): JSX.Element {
+  const dispatch = useAppDispatch(),
+    todaysQuote = useAppSelector(state => state.general.quote);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const onGetTodayQuote = async () => {
+        try {
+          const res = await generalApiRequests.getTodaysQuote();
+          dispatch(updateQuote(res.data));
+        } catch (err) {
+          //
+        }
+      };
+
+      onGetTodayQuote();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
+
   return (
     <View style={styles.quoteContainer}>
-      <ImageBackground source={TealBg} style={styles.quoteBg}>
-        <LinearGradient
-          colors={["rgba(255, 255, 255, 0.60)", "rgba(255, 255, 255, 0.60)"]}
-          locations={[0, 1]}
-          style={styles.quoteContent}
-        >
-          <CustomText style={styles.quoteHeading}>TODAY’S QUOTE</CustomText>
-          <CustomText style={styles.quoteText}>
-            We have no intention of rotating capital out of strong multi-year
-            investments because they’ve recently done well or because ‘growth’
-            has out performed ‘value’.
+      <View style={styles.quoteContent}>
+        <CustomText style={styles.quoteHeading}>TODAY’S QUOTE</CustomText>
+        <CustomText style={styles.quoteText}>{todaysQuote.quote}</CustomText>
+        <View style={styles.quoteBottom}>
+          <CustomText style={styles.quoteAuthor}>
+            {todaysQuote.author}
           </CustomText>
-          <View style={styles.quoteBottom}>
-            <CustomText style={styles.quoteAuthor}>Carl Sagan</CustomText>
-            <Pressable style={styles.quoteShare}>
-              <CustomSvgXml svg={QuoteShareIcon} />
-            </Pressable>
-          </View>
-        </LinearGradient>
-      </ImageBackground>
+          <Pressable style={styles.quoteShare}>
+            <CustomSvgXml svg={QuoteShareIcon} />
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 }
@@ -48,19 +67,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 16,
     overflow: "hidden",
+    backgroundColor: "rgba(64, 187, 195, 0.15)",
   },
   quoteBg: {
     width: "100%",
   },
   quoteContent: {
+    borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 20,
+    backgroundColor: GlobalStyles.colors.accent.teal001,
+    borderColor: GlobalStyles.colors.accent.teal002,
+    borderWidth: 2,
   },
   quoteHeading: {
     fontFamily: GlobalStyles.fontFamily.sans.bold,
     marginBottom: 22.98,
-    color: "#000000",
-    opacity: 0.5,
+    color: "#FFFFFF",
   },
   quoteDivider: {
     borderColor: GlobalStyles.colors.white,
@@ -68,7 +91,7 @@ const styles = StyleSheet.create({
     width: 30,
     marginVertical: 20,
   },
-  quoteText: { color: "#222", marginBottom: 10 },
+  quoteText: { color: "#FFFFFF", marginBottom: 10 },
   quoteBottom: {
     color: GlobalStyles.colors.white,
     flexDirection: "row",
@@ -76,7 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   quoteAuthor: {
-    color: "#94A1AD",
+    color: "#FFFFFF",
     fontSize: 15,
     fontFamily: GlobalStyles.fontFamily.sans.bold,
   },

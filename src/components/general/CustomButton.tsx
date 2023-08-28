@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { GlobalStyles } from "~styles";
 
-type ButtonVariants = "primary" | "secondary";
+type ButtonVariants = "primary" | "secondary" | "ghost";
 interface Props {
   onPress: () => void;
   title?: string;
@@ -61,9 +61,22 @@ const secondaryStyles = StyleSheet.create({
   },
 });
 
+const ghostStyles = StyleSheet.create({
+  ...baseStyles,
+  container: {
+    ...baseStyles.container,
+    backgroundColor: "transparent",
+  },
+  title: {
+    ...baseStyles.title,
+    color: GlobalStyles.colors.accent.teal001,
+  },
+});
+
 const allStyles: { [index: string]: any } = {
   primary: primaryStyles,
   secondary: secondaryStyles,
+  ghost: ghostStyles,
 };
 function CustomButton({ ...props }: Props) {
   const styles = allStyles[props.variant ?? "primary"];
@@ -75,7 +88,7 @@ function CustomButton({ ...props }: Props) {
       style={{
         ...styles.container,
         ...props.containerStyle,
-        opacity: isDisabled ? 0.5 : 1,
+        opacity: isDisabled ? 0.3 : 1,
       }}
       onPress={props.onPress}
       disabled={isDisabled || isLoading}
