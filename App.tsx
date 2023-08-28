@@ -5,16 +5,16 @@
  * @format
  */
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, ScrollView, Text, TextInput } from "react-native";
-import setDefaultProps from "react-native-simple-default-props";
-import { GlobalStyles } from "~styles";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import RootNavigation from "~navigation";
-import { Provider } from "react-redux";
-import { store } from "~store";
-import { WithSplashScreen } from "~navigation/SplashScreen";
+import setDefaultProps from "react-native-simple-default-props";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { Provider } from "react-redux";
+import RootNavigation from "~navigation";
+import { WithSplashScreen } from "~navigation/SplashScreen";
+import { store } from "~store";
+import { GlobalStyles } from "~styles";
 
 const queryClient = new QueryClient();
 
@@ -79,11 +79,13 @@ function App(): JSX.Element {
   return (
     <WithSplashScreen isAppReady={isAppReady}>
       <Provider store={store}>
+        {/* <PersistGate loading={null} persistor={persistor}> */}
         <SafeAreaProvider>
           <QueryClientProvider client={queryClient}>
             <RootNavigation />
           </QueryClientProvider>
         </SafeAreaProvider>
+        {/* </PersistGate> */}
       </Provider>
     </WithSplashScreen>
   );

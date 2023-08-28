@@ -1,4 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useCallback, useState } from "react";
 import {
   FlatList,
   ImageBackground,
@@ -8,20 +10,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { imageAssets, svgAssets } from "~assets";
 import CustomScreenContainer from "~components/general/CustomScreenContainer";
+import CustomSvgXml from "~components/general/CustomSvgXml";
 import CustomText from "~components/general/CustomText";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { MainNavigationParamList } from "~types/navigation";
+import StackScreensNavBar from "~components/general/StackScreensNavBar";
+import { useQueryPlans } from "~hooks/useQueryPlans";
 import { useAppDispatch, useAppSelector } from "~hooks/useStore";
 import plansApiRequests from "~services/plansRequests";
 import { fetchPlans } from "~store/slices/plansSlice";
-import CustomSvgXml from "~components/general/CustomSvgXml";
-import { imageAssets, svgAssets } from "~assets";
 import { GlobalStyles } from "~styles";
+import { MainNavigationParamList } from "~types/navigation";
 import { PlanType } from "~types/plans";
-import StackScreensNavBar from "~components/general/StackScreensNavBar";
-import { useQueryPlans } from "~hooks/useQueryPlans";
 
 interface Props {
   //
@@ -51,7 +51,7 @@ export default function AllPlans(props: Props): JSX.Element {
   const dispatch = useAppDispatch(),
     plansState = useAppSelector(state => state.plans);
 
-  const myPlans = plansState.plans.items;
+  const myPlans = plansState.plans?.items;
 
   const keyExtractor = useCallback(
     (item: (typeof myPlans)[0], index: number) => {
@@ -68,7 +68,7 @@ export default function AllPlans(props: Props): JSX.Element {
     if (!Boolean(query)) {
       return true;
     }
-    const queried = plansState.plans.items.filter(
+    const queried = plansState.plans?.items.filter(
       ({ plan_name, invested_amount }) =>
         `${plan_name}`.toLowerCase().includes(`${query}`.toLowerCase()) ||
         `${invested_amount}`.toLowerCase().includes(`${query}`.toLowerCase()),
@@ -119,9 +119,26 @@ export default function AllPlans(props: Props): JSX.Element {
     </View>
   );
 
-  useEffect(() => {
-    dispatch(fetchPlans(plansQuery.data));
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const onGetPlans = async () => {
+        try {
+          const res = await plansApiRequests.getPlans();
+          dispatch(fetchPlans(res.data));
+        } catch (err) {
+          //
+        }
+      };
+
+      onGetPlans();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   return (
     <CustomScreenContainer>

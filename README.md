@@ -1,79 +1,30 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+## Key Tech used
 
-# Getting Started
+- [React Native](https://reactnative.dev/) (CLI) - used for the main development environment.
+- [Typescript](https://www.typescriptlang.org/) - This strongly typed programming language builds on JavaScript, giving you better tooling at any scale.
+- [Redux](https://redux.js.org/) and its ecosystems - used for utilising global state management.
+- [React Navigation](https://reactnavigation.org/) is the library that will be used for navigating between screens.
+- [date-fns](https://date-fns.org/) will be used for parsing, validating, manipulating, and displaying dates and times in JavaScript.
+- [react-query](https://tanstack.com/query/latest)
+- [Axios](https://axios-http.com/docs/intro) a promise-based HTTP Client for API request calls
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Folder structuring
 
-## Step 1: Start the Metro Server
-
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
-
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
-
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
-
-## Step 3: Modifying your App
-
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- src/ - **the main source code folder**
+  - assets/ - **the assets parent folder**
+    - fonts/ - **this contains the fonts used in the project**
+    - images/ - **this contains the static image assets used in the project**
+    - svgs/ - **this contains static SVG assets used in the project, extracted from the Figma design**
+    - _index.ts_ - **this is the main entry point to the parent asset folder, for all exported static assets**
+  - components/ - **the parent folder for all reusable components. Components are further grouped based on related use types or related parent screen or screen stack**
+  - hooks/ - **this contains all custom hooks**
+  - navigation/ - **the parent folder for the app’s navigation setup**
+    - _index.tsx_ - **the root navigation file export**
+  - screens/ - **the parent folder for all screen (or page) components. Screens are further grouped based on related screen stack**
+  - store/ - **the parent folder for the global state management setup**
+    - Slice/ - **this contains each slice of data contained in the state**
+      - \*index.ts - **this contains all reducers for the state data manipulation, for each slice of data\***
+    - Types - **type definition for the state management**
+    - _index.ts_ - **this is the state’s store configuration**
+  - styles/ - **this contains the app styles configuration**
+  - utils/ - **this contains all utility functions and constants**

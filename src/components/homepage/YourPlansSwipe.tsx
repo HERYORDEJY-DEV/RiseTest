@@ -1,6 +1,6 @@
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import {
   ImageBackground,
   Pressable,
@@ -16,8 +16,8 @@ import {
 import { imageAssets, svgAssets } from "~assets";
 import CustomSvgXml from "~components/general/CustomSvgXml";
 import CustomText from "~components/general/CustomText";
-import { useQueryPlans } from "~hooks/useQueryPlans";
 import { useAppDispatch, useAppSelector } from "~hooks/useStore";
+import plansApiRequests from "~services/plansRequests";
 import { fetchPlans } from "~store/slices/plansSlice";
 import { GlobalStyles } from "~styles";
 import { calcNormalLineHeight } from "~styles/constants";
@@ -40,7 +40,7 @@ const slideWidth = 188,
   { PlanItemImage } = imageAssets;
 
 const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
-  const plansQuery = useQueryPlans();
+  // const plansQuery = useQuery("plans", fetchPlansQuery);
   const scrollOffset = useSharedValue(0);
   const navigation =
     useNavigation<NativeStackNavigationProp<MainNavigationParamList, "Tab">>();
@@ -54,17 +54,34 @@ const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
     },
   });
 
-  const myPlans = plansState.plans.items;
+  const myPlans = plansState.plans?.items;
 
-  useEffect(() => {
-    dispatch(fetchPlans(plansQuery.data));
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const onGetPlans = async () => {
+        try {
+          const res = await plansApiRequests.getPlans();
+          dispatch(fetchPlans(res.data));
+        } catch (err) {
+          //
+        }
+      };
+
+      onGetPlans();
+
+      return () => {
+        isActive = false;
+      };
+    }, []),
+  );
 
   return (
     <View style={{}}>
       {/*  header */}
       <View style={styles.header}>
-        {plansState.plans.item_count === 0 ? (
+        {plansState.plans?.item_count === 0 ? (
           <CustomText variant={"heading"} style={styles.headerTitle}>
             Create Plan
           </CustomText>
@@ -83,7 +100,7 @@ const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
         </Pressable>
       </View>
       {/* description */}
-      {plansState.plans.item_count === 0 && (
+      {plansState.plans?.item_count === 0 && (
         <CustomText style={styles.desc}>
           Start your investment journey by creating a{"\n"}plan
         </CustomText>
@@ -107,7 +124,7 @@ const YourPlansSwipe = React.memo((props: Props): JSX.Element => {
             Create an{"\n"}investment plan
           </CustomText>
         </Pressable>
-        {myPlans.map(
+        {myPlans?.map(
           (plan: PlanType, index: number) =>
             index < 5 && (
               <TouchableOpacity

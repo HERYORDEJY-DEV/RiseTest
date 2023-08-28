@@ -147,6 +147,7 @@ const CustomBottomTabBar = ({
         >
           {routeNames.map((routeName, index) => (
             <TabBarItem
+              key={`${index}`}
               routeNames={routeNames}
               animatedStyle={animatedStyle}
               key={routeName}

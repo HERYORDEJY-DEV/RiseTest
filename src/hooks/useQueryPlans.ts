@@ -1,9 +1,9 @@
 import { useQuery } from "react-query";
 import plansApiRequests from "~services/plansRequests";
 
-const fetchPlans = async () => {
+export const fetchPlansQuery = async () => {
   const { data } = await plansApiRequests.getPlans();
   return data;
 };
 
-export const useQueryPlans = () => useQuery("plans", fetchPlans);
+export const useQueryPlans = () => useQuery("plans", fetchPlansQuery);

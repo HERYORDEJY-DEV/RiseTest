@@ -63,7 +63,7 @@ export default function ChoosePlanToFund(props: Props): JSX.Element {
   const dispatch = useAppDispatch(),
     plansState = useAppSelector(state => state.plans);
 
-  const myPlans = plansState.plans.items;
+  const myPlans = plansState.plans?.items;
 
   console.log("\n\n 0%5 :>> \t\t", 1 % 6, "\n\n---");
 
@@ -82,7 +82,7 @@ export default function ChoosePlanToFund(props: Props): JSX.Element {
     if (!Boolean(query)) {
       return true;
     }
-    const queried = plansState.plans.items.filter(
+    const queried = plansState.plans?.items.filter(
       ({ plan_name, invested_amount }) =>
         `${plan_name}`.toLowerCase().includes(`${query}`.toLowerCase()) ||
         `${invested_amount}`.toLowerCase().includes(`${query}`.toLowerCase()),

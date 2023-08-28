@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import CustomText from "~components/general/CustomText";
-import CustomScreenContainer from "~components/general/CustomScreenContainer";
-import StackScreensNavBar from "~components/general/StackScreensNavBar";
 import { svgAssets } from "~assets";
+import CustomScreenContainer from "~components/general/CustomScreenContainer";
 import CustomSvgXml from "~components/general/CustomSvgXml";
+import CustomText from "~components/general/CustomText";
+import StackScreensNavBar from "~components/general/StackScreensNavBar";
 
 interface Props {
   //
@@ -35,25 +35,27 @@ export default function SelectBank(props: Props): JSX.Element {
         <View style={styles.container}>
           {banks.map((bank, index) => {
             return (
-              <>
-                <View style={styles.item}>
-                  <View style={{ rowGap: 2 }}>
-                    <View style={styles.itemNameWrapper}>
-                      <CustomText style={styles.accountNumber}>
-                        {bank.accountNumber} •{" "}
-                      </CustomText>
-                      <CustomText style={styles.bankName}>
-                        {bank.bankName}
+              <React.Fragment key={`${index}`}>
+                <>
+                  <View style={styles.item}>
+                    <View style={{ rowGap: 2 }}>
+                      <View style={styles.itemNameWrapper}>
+                        <CustomText style={styles.accountNumber}>
+                          {bank.accountNumber} •{" "}
+                        </CustomText>
+                        <CustomText style={styles.bankName}>
+                          {bank.bankName}
+                        </CustomText>
+                      </View>
+                      <CustomText style={styles.accountName}>
+                        {bank.accountName}
                       </CustomText>
                     </View>
-                    <CustomText style={styles.accountName}>
-                      {bank.accountName}
-                    </CustomText>
+                    <CustomSvgXml svg={ChevronRight} />
                   </View>
-                  <CustomSvgXml svg={ChevronRight} />
-                </View>
-                <View style={styles.seperator} />
-              </>
+                  <View style={styles.seperator} />
+                </>
+              </React.Fragment>
             );
           })}
         </View>

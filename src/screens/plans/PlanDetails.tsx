@@ -343,7 +343,7 @@ export default function PlanDetails(props: Props): React.JSX.Element {
             {/*  data */}
             <View style={styles.dataWrapper}>
               {txData.map(({ key, value }) => (
-                <View style={styles.dataItem}>
+                <View style={styles.dataItem} key={`${index}`}>
                   <CustomText style={styles.dataKey}>{key}</CustomText>
                   <CustomText style={styles.dataValue}>
                     {formatAmount(value, key.includes("Naira") ? true : "$")}

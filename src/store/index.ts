@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import reducer from "./slices";
-import { Storage } from "redux-persist";
+import { Storage, persistReducer, persistStore } from "redux-persist";
 import { MMKV } from "react-native-mmkv";
 import logger from "redux-logger";
 
@@ -21,17 +21,17 @@ export const reduxStorage: Storage = {
   },
 };
 
-// const persistConfig = {
-//   key: "RiseRnTest",
-//   version: 1,
-//   storage: reduxStorage,
-//   blacklist: [],
-// };
+const persistConfig = {
+  key: "RiseRnTest",
+  version: 1,
+  storage: reduxStorage,
+  blacklist: [],
+};
 
-// const persistedReducer = persistReducer(
-//   persistConfig,
-//   reducer, // combineReducers(reducer),
-// );
+const persistedReducer = persistReducer(
+  persistConfig,
+  reducer, // combineReducers(reducer),
+);
 
 export const store = configureStore({
   middleware: getDefaultMiddleware =>
@@ -40,4 +40,4 @@ export const store = configureStore({
   reducer,
 });
 
-// export let persistor = persistStore(store);
+export let persistor = persistStore(store);

@@ -41,8 +41,6 @@ export default function TargetAmount(props: Props): JSX.Element {
 
   const [form, setForm] = useState({ amount: "0" });
 
-  console.log("\n\n iiiio :>> \t\t", Number(form.amount), { form }, "\n\n---");
-
   const onSetForm = (key: keyof typeof form, value: string) =>
     setForm(prev => ({ ...prev, [key]: value }));
 
